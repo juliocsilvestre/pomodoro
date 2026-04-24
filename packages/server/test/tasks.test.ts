@@ -41,8 +41,9 @@ describe('task routes', () => {
     const created = (await app.inject({ method: 'POST', url: '/tasks', payload: { title: 'X', category: 'personal' } })).json()
     const res = await app.inject({ method: 'PATCH', url: `/tasks/${created.id}`, payload: { status: 'done' } })
     expect(res.statusCode).toBe(200)
-    expect(res.json().status).toBe('done')
-    expect(res.json().completed_at).toBeTruthy()
+    const body = res.json()
+    expect(body.status).toBe('done')
+    expect(body.completed_at).toBeTruthy()
   })
 
   it('DELETE /tasks/:id removes the task', async () => {

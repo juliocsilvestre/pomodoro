@@ -17,6 +17,9 @@ export async function registerTaskRoutes(app: FastifyInstance, db: Db, ws: WsMan
 
   app.post('/tasks', async (req, reply) => {
     const { title, category } = req.body as { title: string; category: TaskCategory }
+    if (!title || typeof title !== 'string' || title.trim() === '') {
+      return reply.status(400).send({ error: 'title is required' })
+    }
     if (!['work', 'study', 'personal'].includes(category)) {
       return reply.status(400).send({ error: 'Invalid category' })
     }
@@ -38,12 +41,23 @@ export async function registerTaskRoutes(app: FastifyInstance, db: Db, ws: WsMan
 
   app.patch('/tasks/:id', async (req, reply) => {
     const { id } = req.params as { id: string }
-    const updates = req.body as Partial<Pick<Task, 'title' | 'status' | 'category'>>
-    if (updates.status === 'done') (updates as Record<string, unknown>).completed_at = Date.now()
-    const cols = Object.keys(updates).map(k => `${k} = ?`).join(', ')
-    db.prepare(`UPDATE tasks SET ${cols} WHERE id = ?`).run(...Object.values(updates), id)
+    const PATCHABLE = ['title', 'status', 'category'] as const
+    type PatchKey = typeof PATCHABLE[number]
+
+    const body = req.body as Record<string, unknown>
+    const safe: Record<string, unknown> = {}
+    for (const col of PATCHABLE) {
+      if (col in body) safe[col] = body[col]
+    }
+    if (safe.status === 'done') safe.completed_at = Date.now()
+
+    if (Object.keys(safe).length === 0) return reply.status(400).send({ error: 'No valid fields to update' })
+
+    const cols = Object.keys(safe).map(k => `${k} = ?`).join(', ')
+    const info = db.prepare(`UPDATE tasks SET ${cols} WHERE id = ?`).run(...Object.values(safe), id)
+    if (info.changes === 0) return reply.status(404).send({ error: 'Not found' })
+
     const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id) as Task
-    if (!task) return reply.status(404).send({ error: 'Not found' })
     ws.broadcast({ type: 'task_updated', task })
     return task
   })
