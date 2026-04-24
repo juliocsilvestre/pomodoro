@@ -1,0 +1,23 @@
+{
+  "name": "@juliocsilvestre/pomodoro-tui",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "ink": "^4.4.1",
+    "react": "^18.3.1",
+    "@juliocsilvestre/pomodoro-server": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0",
+    "vitest": "^1.6.0"
+  }
+}

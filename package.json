@@ -1,0 +1,14 @@
+{
+  "name": "@juliocsilvestre/pomodoro",
+  "version": "0.1.0",
+  "description": "Pomodoro timer — TUI + web app with shared real-time state",
+  "bin": { "pomodoro": "./bin/cli.js" },
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "dev:server": "npm run dev -w packages/server",
+    "dev:web": "npm run dev -w packages/web"
+  },
+  "license": "MIT"
+}
