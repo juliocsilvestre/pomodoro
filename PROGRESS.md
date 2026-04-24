@@ -26,7 +26,7 @@ Design spec: `docs/superpowers/specs/2026-04-23-pomodoro-design.md`
 | 6 | Task routes (`packages/server/src/routes/tasks.ts`) | ⏳ Pending |
 | 7 | Sessions, settings, timer routes | ⏳ Pending |
 | 8 | Server entry point (`server.ts`, `index.ts`, `handler.ts`) | ⏳ Pending |
-| 9 | TUI client module (`packages/tui/src/client.ts`) | ⏳ Pending |
+| 9 | TUI client module (`packages/tui/src/client.ts`) | ✅ Done |
 | 10 | TUI components (ProgressBar, TimerPanel, TasksPanel, AddTaskForm) | ⏳ Pending |
 | 11 | TUI App root and entry point | ⏳ Pending |
 | 12 | Web scaffold, HTML, API client, state | ⏳ Pending |
