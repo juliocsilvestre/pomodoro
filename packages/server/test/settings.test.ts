@@ -11,7 +11,7 @@ async function buildApp() {
   const timer = new TimerEngine(db, vi.fn(), vi.fn())
   const app = Fastify()
   await registerSettingsRoutes(app, db, timer, ws)
-  return { app, db }
+  return { app, db, ws }
 }
 
 describe('settings routes', () => {
@@ -25,12 +25,16 @@ describe('settings routes', () => {
   })
 
   it('PUT /settings updates values', async () => {
-    const { app } = await buildApp()
+    const { app, ws } = await buildApp()
+    const broadcastSpy = vi.spyOn(ws, 'broadcast')
     const res = await app.inject({
       method: 'PUT', url: '/settings',
       payload: { work_duration: 3000 },
     })
     expect(res.statusCode).toBe(200)
     expect(res.json().work_duration).toBe(3000)
+    expect(broadcastSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'settings_updated' })
+    )
   })
 })

@@ -17,6 +17,11 @@ function readSettings(db: Db): Settings {
   }
 }
 
+const ALLOWED_SETTINGS_KEYS = new Set([
+  'work_duration', 'short_break', 'long_break',
+  'long_break_interval', 'sound_type', 'sound_volume',
+])
+
 export async function registerSettingsRoutes(
   app: FastifyInstance,
   db: Db,
@@ -25,8 +30,10 @@ export async function registerSettingsRoutes(
 ) {
   app.get('/settings', async () => readSettings(db))
 
-  app.put('/settings', async (req) => {
+  app.put('/settings', async (req, reply) => {
     const updates = req.body as Partial<Record<string, string | number>>
+    const invalid = Object.keys(updates).filter(k => !ALLOWED_SETTINGS_KEYS.has(k))
+    if (invalid.length) return reply.code(400).send({ error: `Unknown settings keys: ${invalid.join(', ')}` })
     const upd = db.prepare('UPDATE settings SET value = ? WHERE key = ?')
     for (const [k, v] of Object.entries(updates)) upd.run(String(v), k)
     const settings = readSettings(db)

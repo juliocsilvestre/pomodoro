@@ -26,11 +26,11 @@ export async function registerTimerRoutes(app: FastifyInstance, timer: TimerEngi
 
   app.post('/timer/skip', async () => {
     timer.skip()
-    return timer.getState()
+    return broadcastState()
   })
 
   app.post('/timer/reset', async () => {
     timer.reset()
-    return timer.getState()
+    return broadcastState()
   })
 }
