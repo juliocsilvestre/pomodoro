@@ -60,4 +60,30 @@ describe('task routes', () => {
     const res = await app.inject({ method: 'POST', url: '/tasks', payload: { title: 'Z', category: 'invalid' } })
     expect(res.statusCode).toBe(400)
   })
+
+  it('POST /tasks returns 400 for empty title', async () => {
+    const { app } = await buildApp()
+    const res = await app.inject({
+      method: 'POST', url: '/tasks',
+      payload: { title: '', category: 'work' },
+    })
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('PATCH /tasks/:id returns 404 for unknown id', async () => {
+    const { app } = await buildApp()
+    const res = await app.inject({
+      method: 'PATCH', url: '/tasks/nonexistent-id',
+      payload: { status: 'done' },
+    })
+    expect(res.statusCode).toBe(404)
+  })
+
+  it('DELETE /tasks/:id returns 404 for unknown id', async () => {
+    const { app } = await buildApp()
+    const res = await app.inject({
+      method: 'DELETE', url: '/tasks/nonexistent-id',
+    })
+    expect(res.statusCode).toBe(404)
+  })
 })

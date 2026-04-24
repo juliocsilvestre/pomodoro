@@ -42,7 +42,6 @@ export async function registerTaskRoutes(app: FastifyInstance, db: Db, ws: WsMan
   app.patch('/tasks/:id', async (req, reply) => {
     const { id } = req.params as { id: string }
     const PATCHABLE = ['title', 'status', 'category'] as const
-    type PatchKey = typeof PATCHABLE[number]
 
     const body = req.body as Record<string, unknown>
     const safe: Record<string, unknown> = {}
@@ -64,7 +63,8 @@ export async function registerTaskRoutes(app: FastifyInstance, db: Db, ws: WsMan
 
   app.delete('/tasks/:id', async (req, reply) => {
     const { id } = req.params as { id: string }
-    db.prepare('DELETE FROM tasks WHERE id = ?').run(id)
+    const info = db.prepare('DELETE FROM tasks WHERE id = ?').run(id)
+    if (info.changes === 0) return reply.status(404).send({ error: 'Not found' })
     ws.broadcast({ type: 'task_deleted', id })
     return reply.status(204).send()
   })
