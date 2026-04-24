@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pomodoro</title>
+  <link rel="stylesheet" href="/src/styles/main.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <span class="brand">POMODORO</span>
+      <nav class="tabs">
+        <button class="tab active" data-tab="timer">Timer</button>
+        <button class="tab" data-tab="tasks">Tarefas</button>
+        <button class="tab" data-tab="history">Histórico</button>
+      </nav>
+      <button id="btn-settings" title="Configurações">⚙</button>
+    </header>
+
+    <main>
+      <section id="tab-timer" class="tab-panel active">
+        <div class="timer-session-label" id="session-label">TRABALHO</div>
+        <div class="timer-pomodoro" id="pomodoro-num">#1</div>
+        <div class="timer-display" id="timer-display">25:00</div>
+        <div class="timer-progress-wrap">
+          <div class="timer-progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="timer-dots" id="timer-dots">○○○○</div>
+        <div class="timer-current-task" id="current-task"></div>
+        <div class="timer-controls">
+          <button id="btn-skip">⏭ pular</button>
+          <button id="btn-pause" class="primary">⏸ iniciar</button>
+          <button id="btn-pip" title="Picture-in-Picture">⧉</button>
+        </div>
+      </section>
+
+      <section id="tab-tasks" class="tab-panel">
+        <div class="task-group">
+          <div class="task-group-header">Trabalho</div>
+          <ul class="task-list" id="list-work"></ul>
+        </div>
+        <div class="task-group">
+          <div class="task-group-header">Estudo</div>
+          <ul class="task-list" id="list-study"></ul>
+        </div>
+        <div class="task-group">
+          <div class="task-group-header">Pessoal</div>
+          <ul class="task-list" id="list-personal"></ul>
+        </div>
+        <div class="task-add">
+          <input id="new-task-title" type="text" placeholder="nova tarefa..." />
+          <select id="new-task-category">
+            <option value="work">Trabalho</option>
+            <option value="study">Estudo</option>
+            <option value="personal">Pessoal</option>
+          </select>
+          <button id="btn-add-task">+</button>
+        </div>
+        <button id="btn-archive-done">Arquivar concluídas</button>
+      </section>
+
+      <section id="tab-history" class="tab-panel">
+        <div id="history-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal-settings" class="modal hidden">
+    <div class="modal-content">
+      <h2>Configurações</h2>
+      <label>Trabalho (min) <input type="number" id="s-work" min="1" max="120" /></label>
+      <label>Pausa curta (min) <input type="number" id="s-short" min="1" max="60" /></label>
+      <label>Pausa longa (min) <input type="number" id="s-long" min="1" max="60" /></label>
+      <label>Intervalo (pomodoros) <input type="number" id="s-interval" min="1" max="10" /></label>
+      <label>Som
+        <select id="s-sound-type">
+          <option value="generated">Gerado</option>
+          <option value="file">Sino (arquivo)</option>
+        </select>
+      </label>
+      <label>Volume <input type="range" id="s-volume" min="0" max="1" step="0.1" /></label>
+      <div class="modal-actions">
+        <button id="btn-settings-save">Salvar</button>
+        <button id="btn-settings-cancel">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
