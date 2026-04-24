@@ -6,10 +6,11 @@ import { mkdirSync } from 'fs'
 const DATA_DIR = join(homedir(), '.pomodoro')
 
 export function createDb(path?: string) {
-  const dbPath = path ?? (() => {
+  let dbPath = path
+  if (dbPath === undefined) {
     mkdirSync(DATA_DIR, { recursive: true })
-    return join(DATA_DIR, 'data.db')
-  })()
+    dbPath = join(DATA_DIR, 'data.db')
+  }
 
   const db = new Database(dbPath)
   db.pragma('journal_mode = WAL')
@@ -46,7 +47,10 @@ export function createDb(path?: string) {
     sound_volume: '0.7',
   }
   const ins = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)')
-  for (const [k, v] of Object.entries(defaults)) ins.run(k, v)
+  const seed = db.transaction((entries: [string, string][]) => {
+    for (const [k, v] of entries) ins.run(k, v)
+  })
+  seed(Object.entries(defaults))
 
   return db
 }

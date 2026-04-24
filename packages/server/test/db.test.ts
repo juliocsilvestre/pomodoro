@@ -1,4 +1,3 @@
-// packages/server/test/db.test.ts
 import { describe, it, expect } from 'vitest'
 import { createDb } from '../src/db.js'
 
@@ -15,10 +14,10 @@ describe('createDb', () => {
     expect(m.sound_volume).toBe('0.7')
   })
 
-  it('uses INSERT OR IGNORE so existing settings are not overwritten', () => {
+  it('seed is idempotent — re-running inserts does not overwrite existing values', () => {
     const db = createDb(':memory:')
     db.prepare("UPDATE settings SET value = '3000' WHERE key = 'work_duration'").run()
-    // calling createDb again on the same path would not reset because of OR IGNORE
+    db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run('work_duration', '1500')
     const row = db.prepare("SELECT value FROM settings WHERE key = 'work_duration'").get() as { value: string }
     expect(row.value).toBe('3000')
   })
