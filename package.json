@@ -10,5 +10,6 @@
     "dev:server": "npm run dev -w packages/server",
     "dev:web": "npm run dev -w packages/web"
   },
+  "type": "module",
   "license": "MIT"
 }
