@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { createDb } from '../src/db.js'
+import { mkdtempSync, rmSync } from 'fs'
+import { join } from 'path'
+import { tmpdir } from 'os'
 
 describe('createDb', () => {
   it('creates tables and inserts default settings', () => {
@@ -14,12 +17,22 @@ describe('createDb', () => {
     expect(m.sound_volume).toBe('0.7')
   })
 
-  it('seed is idempotent — re-running inserts does not overwrite existing values', () => {
-    const db = createDb(':memory:')
-    db.prepare("UPDATE settings SET value = '3000' WHERE key = 'work_duration'").run()
-    db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run('work_duration', '1500')
-    const row = db.prepare("SELECT value FROM settings WHERE key = 'work_duration'").get() as { value: string }
-    expect(row.value).toBe('3000')
+  it('seed is idempotent — second createDb call does not overwrite user-modified settings', () => {
+    const tmpDir = mkdtempSync(join(tmpdir(), 'pomodoro-test-'))
+    const dbPath = join(tmpDir, 'data.db')
+    try {
+      const db1 = createDb(dbPath)
+      db1.prepare("UPDATE settings SET value = '3000' WHERE key = 'work_duration'").run()
+      db1.close()
+
+      const db2 = createDb(dbPath)
+      const row = db2.prepare("SELECT value FROM settings WHERE key = 'work_duration'").get() as { value: string }
+      db2.close()
+
+      expect(row.value).toBe('3000')
+    } finally {
+      rmSync(tmpDir, { recursive: true, force: true })
+    }
   })
 
   it('accepts a task with valid category', () => {
