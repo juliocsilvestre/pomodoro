@@ -50,7 +50,8 @@ export class TimerEngine {
   skip() {
     this.clear()
     const completed = this.state.sessionType
-    this.advance()
+    const s = this.settings()
+    this.advance(s)
     this.onComplete(completed, this.state.sessionType)
   }
 
@@ -78,19 +79,22 @@ export class TimerEngine {
   }
 
   private clear() {
-    if (this.interval) { clearInterval(this.interval); this.interval = null }
+    if (this.interval) {
+      clearInterval(this.interval)
+      this.interval = null
+    }
   }
 
   private complete() {
     this.clear()
     const completed = this.state.sessionType
-    this.persist()
-    this.advance()
+    const s = this.settings()
+    this.persist(s)
+    this.advance(s)
     this.onComplete(completed, this.state.sessionType)
   }
 
-  private persist() {
-    const s = this.settings()
+  private persist(s: Settings) {
     const duration =
       this.state.sessionType === 'work' ? s.work_duration
       : this.state.sessionType === 'short_break' ? s.short_break
@@ -105,8 +109,7 @@ export class TimerEngine {
     }
   }
 
-  private advance() {
-    const s = this.settings()
+  private advance(s: Settings) {
     if (this.state.sessionType === 'work') {
       const long = this.state.pomodoroNumber % s.long_break_interval === 0
       this.state.sessionType = long ? 'long_break' : 'short_break'
@@ -124,6 +127,10 @@ export class TimerEngine {
   private settings(): Settings {
     const rows = this.db.prepare('SELECT key, value FROM settings').all() as { key: string; value: string }[]
     const m = Object.fromEntries(rows.map(r => [r.key, r.value]))
+    const required = ['work_duration', 'short_break', 'long_break', 'long_break_interval'] as const
+    for (const k of required) {
+      if (m[k] === undefined) throw new Error(`Missing settings key: ${k}`)
+    }
     return {
       work_duration: Number(m.work_duration),
       short_break: Number(m.short_break),

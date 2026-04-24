@@ -75,7 +75,7 @@ describe('TimerEngine', () => {
     db.prepare("UPDATE settings SET value = '1' WHERE key = 'work_duration'").run()
     const { timer, onComplete } = make(db)
     timer.start()
-    vi.advanceTimersByTime(1500)
+    vi.advanceTimersByTime(1000)
     expect(onComplete).toHaveBeenCalledWith('work', 'short_break')
     const sessions = db.prepare('SELECT * FROM sessions').all()
     expect(sessions).toHaveLength(1)
@@ -97,7 +97,7 @@ describe('TimerEngine', () => {
     db.prepare('INSERT INTO tasks (id, title, category, created_at) VALUES (?, ?, ?, ?)').run('t1', 'Test', 'work', Date.now())
     const { timer } = make(db)
     timer.start('t1')
-    vi.advanceTimersByTime(1500)
+    vi.advanceTimersByTime(1000)
     const task = db.prepare('SELECT pomodoro_count FROM tasks WHERE id = ?').get('t1') as { pomodoro_count: number }
     expect(task.pomodoro_count).toBe(1)
   })
