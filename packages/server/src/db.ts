@@ -5,7 +5,9 @@ import { mkdirSync } from 'fs'
 
 const DATA_DIR = join(homedir(), '.pomodoro')
 
-export function createDb(path?: string) {
+export type Db = Database.Database
+
+export function createDb(path?: string): Db {
   let dbPath = path
   if (dbPath === undefined) {
     mkdirSync(DATA_DIR, { recursive: true })
@@ -54,5 +56,3 @@ export function createDb(path?: string) {
 
   return db
 }
-
-export type Db = ReturnType<typeof createDb>
