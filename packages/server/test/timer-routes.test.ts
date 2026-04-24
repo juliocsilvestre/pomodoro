@@ -11,7 +11,7 @@ async function buildApp() {
   const timer = new TimerEngine(db, vi.fn(), vi.fn())
   const app = Fastify()
   await registerTimerRoutes(app, timer, ws)
-  return { app, timer }
+  return { app, timer, ws }
 }
 
 describe('timer routes', () => {
@@ -47,5 +47,21 @@ describe('timer routes', () => {
     const body = res.json()
     expect(body.sessionType).toBe('work')
     expect(body.status).toBe('idle')
+  })
+
+  it('POST /timer/skip broadcasts tick', async () => {
+    const { app, ws } = await buildApp()
+    await app.inject({ method: 'POST', url: '/timer/start' })
+    const broadcastSpy = vi.spyOn(ws, 'broadcast')
+    await app.inject({ method: 'POST', url: '/timer/skip' })
+    expect(broadcastSpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'tick' }))
+  })
+
+  it('POST /timer/reset broadcasts tick', async () => {
+    const { app, ws } = await buildApp()
+    await app.inject({ method: 'POST', url: '/timer/start' })
+    const broadcastSpy = vi.spyOn(ws, 'broadcast')
+    await app.inject({ method: 'POST', url: '/timer/reset' })
+    expect(broadcastSpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'tick' }))
   })
 })
