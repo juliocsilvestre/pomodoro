@@ -1,8 +1,8 @@
 import './styles/main.css'
 import { state, subscribe, setTimer, setTasks, upsertTask, removeTask, setSettings, setTab, notify } from './state.js'
-import { connectWs, getTasks, getSettings, timerPost, postTask, patchTask, getSessions, putSettings } from './api.js'
+import { connectWs, getTasks, getSettings, timerPost, postTask, patchTask, deleteTask, getSessions, putSettings } from './api.js'
 import { renderTimer } from './tabs/timer.js'
-import { renderTasks } from './tabs/tasks.js'
+import { renderTasks, initTaskGroups } from './tabs/tasks.js'
 import { renderHistory } from './tabs/history.js'
 import { openSettings, closeSettings, readSettingsForm } from './tabs/settings.js'
 import { playNotification } from './sound.js'
@@ -39,11 +39,15 @@ async function init() {
 
 subscribe((s) => {
   renderTimer(s)
-  renderTasks(s, (id) => {
-    const task = s.tasks.find(t => t.id === id)!
-    const newStatus = task.status === 'done' ? 'pending' : 'done'
-    patchTask(id, { status: newStatus }).then(upsertTask)
-  })
+  renderTasks(
+    s,
+    (id) => {
+      const task = s.tasks.find(t => t.id === id)!
+      const newStatus = task.status === 'done' ? 'pending' : 'done'
+      patchTask(id, { status: newStatus }).then(upsertTask)
+    },
+    (id) => deleteTask(id).then(() => removeTask(id)),
+  )
   if (isPipOpen()) updatePip(s.timer)
 })
 
@@ -59,7 +63,10 @@ document.querySelectorAll<HTMLButtonElement>('.tab').forEach(btn => {
   })
 })
 
-document.getElementById('btn-pause')!.addEventListener('click', () => timerPost('pause'))
+document.getElementById('btn-pause')!.addEventListener('click', () => {
+  const action = state.timer.status === 'idle' ? 'start' : 'pause'
+  timerPost(action)
+})
 document.getElementById('btn-skip')!.addEventListener('click', () => timerPost('skip'))
 document.getElementById('btn-pip')!.addEventListener('click', () => openPip(state.timer))
 
@@ -97,4 +104,5 @@ document.getElementById('btn-settings-save')!.addEventListener('click', async ()
   closeSettings()
 })
 
+initTaskGroups()
 init().then(() => notify())

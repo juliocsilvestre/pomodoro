@@ -25,7 +25,7 @@ function pipHtml(timer: TimerState) {
     <div class="label">${SESSION_LABEL[timer.sessionType]}</div>
     <div class="time">${fmt(timer.remainingSeconds)}</div>
     <div class="task">${timer.currentTaskId ? '●' : ''}</div>
-    <button onclick="window.opener?.postMessage({type:'timer_action',action:'pause'},'*')">
+    <button onclick="window.opener?.postMessage({type:'timer_action',action:'${timer.status === 'idle' ? 'start' : 'pause'}'},'*')">
       ${timer.status === 'running' ? '⏸' : '▶'}
     </button>
   `

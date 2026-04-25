@@ -188,6 +188,31 @@ button.primary:hover {
   letter-spacing: 2px;
   color: var(--muted);
   margin-bottom: 8px;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.task-group-header::before {
+  content: '▾';
+  font-size: 12px;
+  transition: transform 0.15s;
+  display: inline-block;
+}
+
+.task-group-header.collapsed::before {
+  transform: rotate(-90deg);
+}
+
+.task-count {
+  background: var(--border);
+  color: var(--muted);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  letter-spacing: 0;
 }
 
 .task-list {
@@ -229,6 +254,26 @@ button.primary:hover {
 .task-pomodoros {
   font-size: 11px;
   color: var(--muted);
+}
+
+.task-delete {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.task-item:hover .task-delete {
+  opacity: 1;
+}
+
+.task-delete:hover {
+  color: var(--fg);
 }
 
 .task-add {

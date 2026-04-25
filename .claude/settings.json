@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status *)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git show *)",
+      "Bash(git branch *)",
+      "Bash(git remote *)",
+      "Bash(git -C *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(ls *)",
+      "Bash(tree *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(which *)",
+      "Bash(jq *)",
+      "Bash(npx tsc *)",
+      "Bash(npx vitest *)",
+      "Bash(vitest *)",
+      "Bash(npm run build)",
+      "Bash(npm run test)",
+      "Bash(npm run dev)"
+    ]
+  }
+}
