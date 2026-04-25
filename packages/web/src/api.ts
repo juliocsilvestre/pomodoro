@@ -2,8 +2,8 @@ import type { ServerMessage, Task, Settings, TaskCategory, Session } from './typ
 
 export type { ServerMessage, Task, Settings, TaskCategory, Session }
 
-const BASE = `http://localhost:${(window as unknown as { POMODORO_PORT?: string }).POMODORO_PORT ?? '3333'}`
-const WS_BASE = `ws://localhost:${(window as unknown as { POMODORO_PORT?: string }).POMODORO_PORT ?? '3333'}`
+const BASE = ''
+const WS_BASE = `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}`
 
 export async function getTasks(): Promise<Task[]> {
   return (await fetch(`${BASE}/tasks`)).json()
